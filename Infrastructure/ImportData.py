@@ -2,7 +2,7 @@ from Infrastructure import Configuration as CONFIG
 from os import path, makedirs
 from tarfile import open
 from pandas import read_csv
-from six.moves import urllib
+#from six.moves import urllib
 
 
 def GetHousingDataFromUrl(housingUrl = CONFIG.HOUSING_URL, housingPath = CONFIG.HOUSING_PATH, filePath = CONFIG.FILE_PATH):

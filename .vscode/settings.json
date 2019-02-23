@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "venvMac/bin/python3.7"
+    "python.pythonPath": "venvMac/bin/python3.7",
+    "python.linting.pylintEnabled": true
 }

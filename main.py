@@ -1,4 +1,11 @@
 from Infrastructure import ImportData, ShowData, EditData
+import matplotlib.pyplot as pyplot
+from sklearn.model_selection import train_test_split as TrainTestSplit, StratifiedShuffleSplit
+import numpy as np
+import pandas as pd
+from pandas.plotting import scatter_matrix
+import sklearn.impute as impute
+from sklearn import preprocessing
 
 # import numpy
 import pandas as pd
@@ -9,21 +16,20 @@ import pandas as pd
 print("-------------------start---------------------")
 pd.set_option('display.expand_frame_repr', False)
 
-ImportData.GetHousingDataFromUrl()
-housing = ImportData.LoadHousingDataFromPath()
-#ShowData.ShowNumericData(housing)
-#ShowData.ShowHistogramsData(housing)
+housingWithComputedId = EditData.GetData()
+stratTrainSet, stratTestSet = EditData.GetTrainAndTestDataSKL(housingWithComputedId)
 
-trainSetRandom, testSetRandom = EditData.SplitRandomTrainTestData(housing, 0.2)
+housingExplorer = EditData.AddNewColums(stratTrainSet)
+housingDataToAssert, housingExpected = EditData.GetCopyAssertAndExpected(housingExplorer, "median_house_value")
+housingAfterTransform = EditData.SetMedianWhereEmpty(housingDataToAssert)
 
-housingWithId = housing.reset_index()
-housingWithComputedId = housing.reset_index()
-housingWithComputedId["id"] = EditData.GetComputedId(housing, "longitude", "latitude")
-trainSetFixed, testSetFixed = EditData.SplitTrainTestDataById(housingWithComputedId, 0.2, "index")
+housingCatEncoded = EditData.EncodeColumn(housingExplorer["ocean_proximity"])
 
+hotEncoder = preprocessing.OneHotEncoder(handle_unknown='ignore')
 
-print( trainSetFixed)
+housingCatEncodedHotOne = hotEncoder.fit_transform(housingCatEncoded.reshape(-1, 1))
 
+print(housingCatEncodedHotOne)
 
 
 print("--------------------end----------------------")
