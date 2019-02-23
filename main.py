@@ -1,17 +1,11 @@
-from Infrastructure import ImportData, ShowData, EditData
-import matplotlib.pyplot as pyplot
-from sklearn.model_selection import train_test_split as TrainTestSplit, StratifiedShuffleSplit
-import numpy as np
+from Infrastructure import EditData, CombinedAttributesAdder as CAA, DataFrameSelector as DFS
+from sklearn.pipeline import Pipeline, FeatureUnion
 import pandas as pd
-from pandas.plotting import scatter_matrix
 import sklearn.impute as impute
-from sklearn import preprocessing
-
-# import numpy
-import pandas as pd
-# import sklearn
-# import matplotlib.pyplot as pyplot
-# import scipy
+from sklearn.preprocessing import StandardScaler, LabelBinarizer, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.linear_model import LinearRegression
 
 print("-------------------start---------------------")
 pd.set_option('display.expand_frame_repr', False)
@@ -21,15 +15,34 @@ stratTrainSet, stratTestSet = EditData.GetTrainAndTestDataSKL(housingWithCompute
 
 housingExplorer = EditData.AddNewColums(stratTrainSet)
 housingDataToAssert, housingExpected = EditData.GetCopyAssertAndExpected(housingExplorer, "median_house_value")
-housingAfterTransform = EditData.SetMedianWhereEmpty(housingDataToAssert)
 
-housingCatEncoded = EditData.EncodeColumn(housingExplorer["ocean_proximity"])
+housingNum = housingDataToAssert.drop("ocean_proximity", axis=1)
 
-hotEncoder = preprocessing.OneHotEncoder(handle_unknown='ignore')
+numAttributs = list(housingNum)
+catAttributs = ["ocean_proximity"]
 
-housingCatEncodedHotOne = hotEncoder.fit_transform(housingCatEncoded.reshape(-1, 1))
+numPipeline = Pipeline([
+        ('imputer', impute.SimpleImputer(strategy="median")),
+        ('std_scaler', StandardScaler())
+    ])
 
-print(housingCatEncodedHotOne)
+fullPipeline = ColumnTransformer([
+        ("num", numPipeline, numAttributs),
+        ("cat", OneHotEncoder(), catAttributs),
+    ])
 
+housingPrepared = fullPipeline.fit_transform(stratTrainSet)
+housingLabels = stratTrainSet["median_house_value"].copy()
 
+lin_reg = LinearRegression()
+
+lin_reg.fit(housingPrepared, housingLabels)
+print(housingPrepared.shape)
+
+someDataPrepared = fullPipeline.transform(stratTrainSet.iloc[:3])
+
+someLabels = housingLabels.iloc[:3]
+
+print("prognoza: ", lin_reg.predict(someDataPrepared))
+print("Etykiety: ", list(someLabels))
 print("--------------------end----------------------")

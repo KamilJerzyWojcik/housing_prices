@@ -42,7 +42,7 @@ def AddNewColums(housingExplorer):
     return housingExplorer
 
 def AddIdAndModifyIncome(housingWithComputedId):
-    housingWithComputedId["id"] = GetComputedId(housingWithComputedId, "longitude", "latitude")
+    #housingWithComputedId["id"] = GetComputedId(housingWithComputedId, "longitude", "latitude")
     housingWithComputedId["income_cat"] = np.ceil(housingWithComputedId["median_income"] / 1.5)
     # jeżeli >5 to nie przypisuj, inczej zamien na 5
     housingWithComputedId["income_cat"].where(housingWithComputedId["income_cat"] < 5, 5.0, inplace=True)
@@ -80,3 +80,15 @@ def EncodeColumn(column):
     # zamiana tekstu na wartości liczbowe
     encoder = preprocessing.LabelEncoder()
     return encoder.fit_transform(column)
+
+rooms_ix, bedrooms_ix, population_ix, household_ix = [list(GetData().columns).index(col) for col in ("total_rooms", "total_bedrooms", "population", "households")]
+
+def AddExtraFeatures(X, add_bedrooms_per_room=True):
+    rooms_per_household = X[:, rooms_ix] / X[:, household_ix]
+    population_per_household = X[:, population_ix] / X[:, household_ix]
+    if add_bedrooms_per_room:
+        bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+        return np.c_[X, rooms_per_household, population_per_household,
+                     bedrooms_per_room]
+    else:
+        return np.c_[X, rooms_per_household, population_per_household]
