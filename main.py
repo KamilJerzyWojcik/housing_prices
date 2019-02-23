@@ -1,11 +1,12 @@
-from Infrastructure import EditData, CombinedAttributesAdder as CAA, DataFrameSelector as DFS
+from Infrastructure import EditData, MachineLearning
 from sklearn.pipeline import Pipeline, FeatureUnion
 import pandas as pd
 import sklearn.impute as impute
 from sklearn.preprocessing import StandardScaler, LabelBinarizer, OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import FunctionTransformer
-from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
 
 print("-------------------start---------------------")
 pd.set_option('display.expand_frame_repr', False)
@@ -31,18 +32,13 @@ fullPipeline = ColumnTransformer([
         ("cat", OneHotEncoder(), catAttributs),
     ])
 
-housingPrepared = fullPipeline.fit_transform(stratTrainSet)
-housingLabels = stratTrainSet["median_house_value"].copy()
 
-lin_reg = LinearRegression()
 
-lin_reg.fit(housingPrepared, housingLabels)
-print(housingPrepared.shape)
+#MachineLearning.LinearRegressionModelGet(stratTrainSet, fullPipeline)
+#MachineLearning.TreeRegressionModelGet(stratTrainSet, fullPipeline)
+#MachineLearning.RandomForestRegressionModelGet(stratTrainSet, fullPipeline)
+#final_model = MachineLearning.RandomForestRegressionBestParamGet(stratTrainSet, fullPipeline)
+#MachineLearning.TestFinalModel(final_model, fullPipeline, stratTestSet)
 
-someDataPrepared = fullPipeline.transform(stratTrainSet.iloc[:3])
 
-someLabels = housingLabels.iloc[:3]
-
-print("prognoza: ", lin_reg.predict(someDataPrepared))
-print("Etykiety: ", list(someLabels))
 print("--------------------end----------------------")
