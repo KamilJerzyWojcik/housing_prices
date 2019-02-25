@@ -4,8 +4,7 @@ import pandas as pd
 import sklearn.impute as impute
 from sklearn.preprocessing import StandardScaler, LabelBinarizer, OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.metrics import mean_squared_error
-import numpy as np
+
 
 
 print("-------------------start---------------------")
