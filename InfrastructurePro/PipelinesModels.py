@@ -95,7 +95,6 @@ class ClearData(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         new_data = X[X["median_house_value"] < 500000].copy()
         new_data = new_data[new_data["housing_median_age"] < 51].copy()
-        new_data = new_data.drop("median_house_value", axis=1)
         new_data = new_data.reset_index(drop=True)
         return new_data
 
